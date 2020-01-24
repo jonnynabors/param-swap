@@ -1,26 +1,51 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  console.log('Congratulations, your extension "param-swap" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "param-swap" is now active!');
+  let disposable = vscode.commands.registerCommand(
+    "extension.paramSwap",
+    () => {
+      const rightBrackets = "})]";
+      // The code you place here will be executed every time your command is executed
+      const editor = vscode.window.activeTextEditor;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+      const offset = editor?.document.offsetAt(editor.selection.active);
+      const text = editor?.document.getText();
+      if (!text || !offset) {
+        return;
+      }
+      // const textArray = [...text!] as string[];
+      // [...text!].forEach(character => console.log(character));
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
-	});
+      findAllTextBeforeLeftBracket(text, offset);
+      debugger;
+      // Display a message box to the user
+      vscode.window.showInformationMessage("Hello World!");
+    }
+  );
 
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
+}
+
+export function findAllTextBeforeLeftBracket(text: string, index: number) {
+  const leftBrackets = "{([";
+  let currentText = "";
+  let bracketFound = false;
+  let currentIndex = index;
+
+  while (!bracketFound) {
+    const currentCharacter = text.charAt(currentIndex);
+    if (leftBrackets.includes(currentCharacter)) {
+      console.log("We found a left bracket");
+      bracketFound = true;
+    }
+    currentText += currentCharacter;
+    currentIndex--;
+  }
+  return currentText;
 }
 
 // this method is called when your extension is deactivated
